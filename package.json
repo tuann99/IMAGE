@@ -1,0 +1,40 @@
+{
+  "name": "image-windows-1.0.1",
+  "version": "1.0.1",
+  "main": "main.js",
+  "author": "Tuan Nguyen",
+  "description": "Interface for Metagenomic data Analysis and Graphical Examination. 2023.",
+  "devDependencies": {
+    "electron": "^27.1.0",
+    "electron-builder": "^24.9.1"
+  },
+  "scripts": {
+    "start": "electron main.js",
+    "package": "electron-packager . IMAGE --platform=win32 --arch=x64 --out=C:\\Users\\tuann\\image_dist --overwrite",
+    "build": "electron-builder build --win --x64"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.1"
+  },
+  "build": {
+    "appId": "com.tuannguyen.image",
+    "productName": "IMAGE",
+    "asar": false,
+    "files": [
+      "db/**/*",
+      "example_data/**/*",
+      "image-env/**/*",
+      "node_modules/**/*",
+      "tmp/**/*",
+      "analysis.py",
+      "index.html",
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "styles.css"
+    ],
+    "win": {
+      "target": ["portable"]
+    }
+  }
+}

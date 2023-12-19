@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self';"> -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://cdn.jsdelivr.net/npm/chart.js">
+    <title>IMAGE</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="container" id="main-container">
+
+        <div class="header">
+            <span class="header-title">IMAGE</span>
+        </div>
+        
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <span class="intro-text">
+                Welcome to the Interface for Metagenomic Analysis and Graphical Examination (IMAGE)<br>
+                To get started, upload your FASTA file or paste your sequence into the text box below. 
+                Once your data has been entered, press the “Start Analysis” button to begin.
+            </span>
+            
+            <form id="dataForm">
+                <div class="sequence-input">
+                    <textarea type="text" id="sequenceInput" placeholder="Example:
+>GF547GT01DESQ0_cs_nbp_rc cs_nbp=36-215 sample=GF547GT01.21
+GTTAAAGGCTGTGGCTTAACCATAGTACGCTTTGGAAACTGTTTAACTTGAGTGCAAGAGGGGAGAGTGGAATTCCATGTGTAGCGGTGAAATGCGTAGATATATGGAGGAACACCGGTGGCGAAAGCGGCTCTCTGGCTTGTAACTGACGCTGAGGCTCGAAAGCGTGGGGAGCAAACA" class="sequence-input"></textarea>
+                </div>
+                
+                <div class="upload-button">
+                    <label for="fileInput" class="file-label">Click here to upload a file</label>
+                    <input type="file" id="fileInput" class="file-input" accept=".fsa, .fasta, .fa, .fna">
+                </div>        
+                
+                <div id="upload-message" class="upload-message"></div>
+    
+                <button id="start-button" type="button" class="start-button" disabled>Start analysis</button>
+            </form>
+        </div>
+        
+        <!-- Loading Screen -->
+        <div id="loading-screen" style="display: none;">
+
+            <h2 class="text">Loading...<h2>
+            <p class="text">This may take a few minutes</p>
+            <p class="text" id="timer"></p>
+
+        </div>
+
+        <!-- Results Screen-->
+        <div id="results-section" style="display: none;">
+            <h2 class="text">Results</h2>
+            <canvas id="myChart"></canvas>
+            <div id="ec-table"></div>
+        </div>
+
+    </div>
+    
+    <script type="module" src="renderer.js"></script>
+</body>
+</html>
