@@ -1,6 +1,6 @@
 {
-  "name": "image-windows-1.0.1",
-  "version": "1.0.1",
+  "name": "image-windows-0.0.5",
+  "version": "0.0.5",
   "main": "main.js",
   "author": "Tuan Nguyen",
   "description": "Interface for Metagenomic data Analysis and Graphical Examination. 2023.",

@@ -8,6 +8,7 @@ const uploadMessage = document.getElementById('upload-message');
 const loadingScreen = document.getElementById('loading-screen');
 const resultsSection = document.getElementById('results-section');
 const tableDiv = document.getElementById('ec-table');
+const check = 'check';
 
 let fileUploaded = false;
 let inputType;
@@ -28,6 +29,117 @@ function startTimer() {
 function stopTimer() {
     clearInterval(timerInterval);
 }
+
+function log(message) {
+    const logDiv = document.getElementById('log');
+    logDiv.innerHTML += 'Progress: ' + message + '<br>';
+}
+
+api.invoke('mainCheck', check).then((preloadPath) => {
+
+    console.log('Check sent to main process.')
+
+    if (preloadPath) {
+        console.log('Reply received from main process, so it is running and IPC is working.');
+        console.log('preload.js path:', preloadPath);
+    }
+    else {
+        console.log('Did not get reply from Main process, so it may not be running');
+    }
+
+});
+
+api.receive('pyvenvPath', (path) => {
+    console.log('pyvenv path: ', path);
+});
+
+api.receive('relativePyvenvPath', (rPath) => {
+    console.log('Extracted path from cfg file: ', rPath);
+});
+
+api.receive('finalPyvenvPath', (fPath) => {
+    console.log('Final path for cfg file: ', fPath);
+});
+
+api.receive('paths', (paths) => {
+    const { pythonExecutablePath, pythonScriptPath } = paths;
+    console.log('Python paths received from main process:', paths);
+    log("Python exe path: " + pythonExecutablePath);
+    log("Python script path: " + pythonScriptPath);
+});
+
+api.receive('pythonProcessStatus', (msg) => {
+    console.log('Python process status: ', msg);
+    log(msg);
+});
+
+api.receive('pythonError', (error) => {
+    console.error('Python error: ', error);
+    log(error);
+});
+
+api.receive('pythonOutput', (outputData) => {
+
+    if (outputData) {
+
+        console.log(typeof outputData, outputData)
+        const data = JSON.parse(outputData);
+        
+        console.log('Output Data received from main process:', outputData);
+        startScreen.style.display = 'none';
+        loadingScreen.style.display = 'none';
+        resultsSection.style.display = 'block';
+        
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgba(${r}, ${g}, ${b}, 0.2)`;
+        }
+
+        function getDarkerColor(rgbColor) {
+            const color = rgbColor.slice(5, -4).split(', ').map(c => Math.max(0, c - 70));
+            return `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`;
+        }
+
+        // Generate a random color for each data point
+        const backgroundColors = labels.map(() => getRandomColor());
+        const borderColors = backgroundColors.map(color => getDarkerColor(color));
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: borderColors,
+                    borderColor: backgroundColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true, // this fixed the drifting issue
+                animation: false,
+                title: {
+                    display: true,
+                    text: 'Pie Chart of functions in sample \nbased on EC numbers',
+                    fontSize: 20
+                }
+            }
+        });
+
+    } else {
+        const errorMsg = 'No output data received from main process';
+        log(errorMsg);
+        console.log(errorMsg);
+        // make a check for why no data was received
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     
@@ -86,90 +198,125 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Add loading bar + timer in the future
 
-        api.invoke('executePythonScript', userInput).then((outputData) => {
-
-            if (outputData) {
-                
-                console.log(typeof outputData, outputData)
-                const data = JSON.parse(outputData);
-                // const data = outputData;
-                // let table = '<table class="styled-table"><tr><th>Title</th><th>Expect</th><th>Subject</th><th>Length</th><th>DB Used</th><th>Accession</th></tr>';
-                // let table = '<table class="styled-table"><tr><th>EC Number</th><th>EC Number Counts</th></tr>';
-                // let currentPage = 0;
-                // const rowsPerPage = 10;
-                
-                console.log('Output Data received from main process:', outputData);
-                startScreen.style.display = 'none';
-                loadingScreen.style.display = 'none';
-                resultsSection.style.display = 'block';
-                
-                const ctx = document.getElementById('myChart').getContext('2d');
-                const labels = Object.keys(data);
-                const values = Object.values(data);
-
-                function getRandomColor() {
-                    const r = Math.floor(Math.random() * 256);
-                    const g = Math.floor(Math.random() * 256);
-                    const b = Math.floor(Math.random() * 256);
-                    return `rgba(${r}, ${g}, ${b}, 0.2)`;
-                }
-
-                function getDarkerColor(rgbColor) {
-                    const color = rgbColor.slice(5, -4).split(', ').map(c => Math.max(0, c - 70));
-                    return `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`;
-                }
-
-                // Generate a random color for each data point
-                const backgroundColors = labels.map(() => getRandomColor());
-                const borderColors = backgroundColors.map(color => getDarkerColor(color));
-
-                new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: values,
-                            backgroundColor: borderColors,
-                            borderColor: backgroundColors,
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true, // this fixed the drifting issue
-                        animation: false,
-                        title: {
-                            display: true,
-                            text: 'Pie Chart of functions in sample \nbased on EC numbers',
-                            fontSize: 20
-                        }
-                    }
-                });
-
-                // data.forEach(row => {
-                //     table += `<tr><td><span>${row.header}</span></td><td><span>${row.nt_seq}</span></td></tr>`;
-                //     table += 
-                //     `<tr>
-                //         <td><span>${row.title}</span></td>
-                //         <td><span>${row.expect}</span></td>
-                //         <td><span>${row.subject}</span></td>
-                //         <td><span>${row.length}</span></td>
-                //         <td><span>${row.db_used}</span></td>
-                //         <td><span>${row.accession}</span></td>
-                //     </tr>`;
-                //     table += 
-                //     `<tr>
-                //         <td><span>${row.ec_number}</span></td>
-                //     </tr>`;
-                // });
-                // table += '</table>';
-                // resultsSection.innerHTML = table;
-                
-            } else {
-                console.log('No output data received from main process');
-                // make a check for why no data was received
-            }
+        api.send('executePythonScript', userInput)
             
-        });
+
     });
 });
+
+// Old code
+// const data = outputData;
+        // let table = '<table class="styled-table"><tr><th>Title</th><th>Expect</th><th>Subject</th><th>Length</th><th>DB Used</th><th>Accession</th></tr>';
+        // let table = '<table class="styled-table"><tr><th>EC Number</th><th>EC Number Counts</th></tr>';
+        // let currentPage = 0;
+        // const rowsPerPage = 10;
+
+// data.forEach(row => {
+        //     table += `<tr><td><span>${row.header}</span></td><td><span>${row.nt_seq}</span></td></tr>`;
+        //     table += 
+        //     `<tr>
+        //         <td><span>${row.title}</span></td>
+        //         <td><span>${row.expect}</span></td>
+        //         <td><span>${row.subject}</span></td>
+        //         <td><span>${row.length}</span></td>
+        //         <td><span>${row.db_used}</span></td>
+        //         <td><span>${row.accession}</span></td>
+        //     </tr>`;
+        //     table += 
+        //     `<tr>
+        //         <td><span>${row.ec_number}</span></td>
+        //     </tr>`;
+        // });
+        // table += '</table>';
+        // resultsSection.innerHTML = table;
+
+
+        // api.whatevers used to go here
+
+        // api.invoke('executePythonScript', userInput).then((outputData) => {
+
+        //     if (outputData) {
+                
+        //         console.log(typeof outputData, outputData)
+        //         const data = JSON.parse(outputData);
+        //         // const data = outputData;
+        //         // let table = '<table class="styled-table"><tr><th>Title</th><th>Expect</th><th>Subject</th><th>Length</th><th>DB Used</th><th>Accession</th></tr>';
+        //         // let table = '<table class="styled-table"><tr><th>EC Number</th><th>EC Number Counts</th></tr>';
+        //         // let currentPage = 0;
+        //         // const rowsPerPage = 10;
+                
+        //         console.log('Output Data received from main process:', outputData);
+        //         startScreen.style.display = 'none';
+        //         loadingScreen.style.display = 'none';
+        //         resultsSection.style.display = 'block';
+                
+        //         const ctx = document.getElementById('myChart').getContext('2d');
+        //         const labels = Object.keys(data);
+        //         const values = Object.values(data);
+
+        //         function getRandomColor() {
+        //             const r = Math.floor(Math.random() * 256);
+        //             const g = Math.floor(Math.random() * 256);
+        //             const b = Math.floor(Math.random() * 256);
+        //             return `rgba(${r}, ${g}, ${b}, 0.2)`;
+        //         }
+
+        //         function getDarkerColor(rgbColor) {
+        //             const color = rgbColor.slice(5, -4).split(', ').map(c => Math.max(0, c - 70));
+        //             return `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`;
+        //         }
+
+        //         // Generate a random color for each data point
+        //         const backgroundColors = labels.map(() => getRandomColor());
+        //         const borderColors = backgroundColors.map(color => getDarkerColor(color));
+
+        //         new Chart(ctx, {
+        //             type: 'pie',
+        //             data: {
+        //                 labels: labels,
+        //                 datasets: [{
+        //                     data: values,
+        //                     backgroundColor: borderColors,
+        //                     borderColor: backgroundColors,
+        //                     borderWidth: 1
+        //                 }]
+        //             },
+        //             options: {
+        //                 responsive: true,
+        //                 maintainAspectRatio: true, // this fixed the drifting issue
+        //                 animation: false,
+        //                 title: {
+        //                     display: true,
+        //                     text: 'Pie Chart of functions in sample \nbased on EC numbers',
+        //                     fontSize: 20
+        //                 }
+        //             }
+        //         });
+
+        //         // data.forEach(row => {
+        //         //     table += `<tr><td><span>${row.header}</span></td><td><span>${row.nt_seq}</span></td></tr>`;
+        //         //     table += 
+        //         //     `<tr>
+        //         //         <td><span>${row.title}</span></td>
+        //         //         <td><span>${row.expect}</span></td>
+        //         //         <td><span>${row.subject}</span></td>
+        //         //         <td><span>${row.length}</span></td>
+        //         //         <td><span>${row.db_used}</span></td>
+        //         //         <td><span>${row.accession}</span></td>
+        //         //     </tr>`;
+        //         //     table += 
+        //         //     `<tr>
+        //         //         <td><span>${row.ec_number}</span></td>
+        //         //     </tr>`;
+        //         // });
+        //         // table += '</table>';
+        //         // resultsSection.innerHTML = table;
+                
+        //     } else {
+        //         const errorMsg = 'No output data received from main process';
+        //         log(errorMsg);
+        //         console.log(errorMsg);
+        //         // make a check for why no data was received
+        //     }
+            
+        // });

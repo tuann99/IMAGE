@@ -1,11 +1,15 @@
-import os
-import sys
-import json
-import pandas as pd
-from Bio.Blast import NCBIWWW, NCBIXML
-from Bio import SeqIO, Seq
-import requests
-from xml.etree import ElementTree as ET
+try:
+    import os
+    import sys
+    import json
+    import pandas as pd
+    from Bio.Blast import NCBIWWW, NCBIXML
+    from Bio import SeqIO, Seq
+    import requests
+    from xml.etree import ElementTree as ET
+except ImportError as e:
+    print(e)
+    sys.exit(1)
 # from multiprocessing import Pool
 # import numpy as np
 # import re
@@ -226,33 +230,40 @@ def clear_tmp_dir():
     return
 
 def main():
-    tmp_fasta = create_tmp_fasta(INPUT)
-    
-    if tmp_fasta is None:
-        print("could not find tmp.fasta")
+    try:
+        tmp_fasta = create_tmp_fasta(INPUT)
+        
+        if tmp_fasta is None:
+            print("could not find tmp.fasta")
+            return
+
+        # with open(tmp_fasta, "r") as in_handle:
+        #     sequences = [str(record.seq) for record in SeqIO.parse(in_handle, "fasta")]
+
+        # with Pool(5) as p:
+        #     p.map(multithreaded_run_blastx_and_save_xml, sequences)
+        
+        num_of_xml = run_blastx_and_save_xml(tmp_fasta)
+        df = create_accession_df(num_of_xml)
+        EC_NUMBER.extend(get_ec_number(accession) for accession in df["accession"])
+        ec_num_df = pd.DataFrame({"ec_number": EC_NUMBER})
+        final_ec_dict = ec_number_count(ec_num_df)
+        print(json.dumps(final_ec_dict))
+        sys.stderr.flush()
+        sys.stdout.flush()
+        # clear_tmp_dir()
+        
+        # if KEEP_OR_REMOVE_TMP_FILES == "remove":    
+        #     clear_tmp_dir()
+        # else:
+        #     pass
+        return
+    except Exception as e:
+        print(e)
         return
 
-    # with open(tmp_fasta, "r") as in_handle:
-    #     sequences = [str(record.seq) for record in SeqIO.parse(in_handle, "fasta")]
-
-    # with Pool(5) as p:
-    #     p.map(multithreaded_run_blastx_and_save_xml, sequences)
-    
-    num_of_xml = run_blastx_and_save_xml(tmp_fasta)
-    df = create_accession_df(num_of_xml)
-    EC_NUMBER.extend(get_ec_number(accession) for accession in df["accession"])
-    ec_num_df = pd.DataFrame({"ec_number": EC_NUMBER})
-    final_ec_dict = ec_number_count(ec_num_df)
-    print(json.dumps(final_ec_dict))
-    sys.stderr.flush()
-    sys.stdout.flush()
-    # clear_tmp_dir()
-    
-    # if KEEP_OR_REMOVE_TMP_FILES == "remove":    
-    #     clear_tmp_dir()
-    # else:
-    #     pass
-    return
-
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"An error occurred: {e}")

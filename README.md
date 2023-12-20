@@ -19,7 +19,7 @@ This app aims to streamline metagenomic analyses by bundling an intuitive GUI wi
 
 ## Features
 
-Generate functional abundance pie graphs.
+BLASTX will be ran on metagenomic samples to generate functional abundance pie graphs.
 
 ## Prerequisites
 
@@ -36,4 +36,3 @@ Generate functional abundance pie graphs.
 ## Technologies Used
 
 ## Acknowledgments
-
