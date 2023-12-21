@@ -4,13 +4,13 @@ The Interface for Metagenomic Analysis and Graphical Examination.
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Technologies Used](#technologies-used)
-- [Acknowledgments](#acknowledgments)
+[Introduction](#introduction)
+[Features](#features)
+[Prerequisites](#prerequisites)
+[Installation](#installation)
+[Usage](#usage)
+[Technologies Used](#technologies-used)
+[Acknowledgments](#acknowledgments)
 
 ## Introduction
 
