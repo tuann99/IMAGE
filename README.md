@@ -9,13 +9,17 @@ The Interface for Metagenomic Analysis and Graphical Examination.
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Folder Structure](#folder-structure)
 - [Technologies Used](#technologies-used)
 - [Acknowledgments](#acknowledgments)
 
 ## Introduction
 
 This app aims to streamline metagenomic analyses by bundling an intuitive GUI with essential analytical tools.
+
+- `/db` contains a TSV file that the app will parse for Enzyme Commission numbers.
+- `/example_data` contains a few sample fasta files that range from one sequence (`example_shortest.fsa`) to 14 sequences (`example_longest.fsa`).
+- `/image-env` contains the venv I created for the app in addition to a full Python 3.12 interpreter.
+- `/tmp` is the directory that temporary files are written to
 
 ## Features
 
@@ -31,8 +35,7 @@ BLASTX will be ran on metagenomic samples to generate functional abundance pie g
 ## Usage
 
 1. Open the `IMAGE.exe` executable.
-
-## Folder Structure
+1. Upload a file, or copy and paste in sequences from your FASTA file.
 
 ## Technologies Used
 
