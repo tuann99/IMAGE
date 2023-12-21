@@ -39,4 +39,12 @@ BLASTX will be ran on metagenomic samples to generate functional abundance pie g
 
 ## Technologies Used
 
+- Electron.js
+- CSS
+- HTML
+- JavaScript
+  - JavaScript Libraries: Chart.js
+- Python
+  - Python Libraries:
+
 ## Acknowledgments
