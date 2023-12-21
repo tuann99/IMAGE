@@ -199,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add loading bar + timer in the future
 
         api.send('executePythonScript', userInput)
-            
 
     });
 });
