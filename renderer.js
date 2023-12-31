@@ -49,7 +49,11 @@ api.invoke('mainCheck', check).then((preloadPath) => {
 
 });
 
-api.receive('pyvenvPath', (path) => {
+api.receive('flagFileStatus', (msg) => {
+    console.log('Flag file status: ', msg);
+});
+
+api.receive('pyvenvCfgPath', (path) => {
     console.log('pyvenv path: ', path);
 });
 
@@ -202,120 +206,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 });
-
-// Old code
-// const data = outputData;
-        // let table = '<table class="styled-table"><tr><th>Title</th><th>Expect</th><th>Subject</th><th>Length</th><th>DB Used</th><th>Accession</th></tr>';
-        // let table = '<table class="styled-table"><tr><th>EC Number</th><th>EC Number Counts</th></tr>';
-        // let currentPage = 0;
-        // const rowsPerPage = 10;
-
-// data.forEach(row => {
-        //     table += `<tr><td><span>${row.header}</span></td><td><span>${row.nt_seq}</span></td></tr>`;
-        //     table += 
-        //     `<tr>
-        //         <td><span>${row.title}</span></td>
-        //         <td><span>${row.expect}</span></td>
-        //         <td><span>${row.subject}</span></td>
-        //         <td><span>${row.length}</span></td>
-        //         <td><span>${row.db_used}</span></td>
-        //         <td><span>${row.accession}</span></td>
-        //     </tr>`;
-        //     table += 
-        //     `<tr>
-        //         <td><span>${row.ec_number}</span></td>
-        //     </tr>`;
-        // });
-        // table += '</table>';
-        // resultsSection.innerHTML = table;
-
-
-        // api.whatevers used to go here
-
-        // api.invoke('executePythonScript', userInput).then((outputData) => {
-
-        //     if (outputData) {
-                
-        //         console.log(typeof outputData, outputData)
-        //         const data = JSON.parse(outputData);
-        //         // const data = outputData;
-        //         // let table = '<table class="styled-table"><tr><th>Title</th><th>Expect</th><th>Subject</th><th>Length</th><th>DB Used</th><th>Accession</th></tr>';
-        //         // let table = '<table class="styled-table"><tr><th>EC Number</th><th>EC Number Counts</th></tr>';
-        //         // let currentPage = 0;
-        //         // const rowsPerPage = 10;
-                
-        //         console.log('Output Data received from main process:', outputData);
-        //         startScreen.style.display = 'none';
-        //         loadingScreen.style.display = 'none';
-        //         resultsSection.style.display = 'block';
-                
-        //         const ctx = document.getElementById('myChart').getContext('2d');
-        //         const labels = Object.keys(data);
-        //         const values = Object.values(data);
-
-        //         function getRandomColor() {
-        //             const r = Math.floor(Math.random() * 256);
-        //             const g = Math.floor(Math.random() * 256);
-        //             const b = Math.floor(Math.random() * 256);
-        //             return `rgba(${r}, ${g}, ${b}, 0.2)`;
-        //         }
-
-        //         function getDarkerColor(rgbColor) {
-        //             const color = rgbColor.slice(5, -4).split(', ').map(c => Math.max(0, c - 70));
-        //             return `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`;
-        //         }
-
-        //         // Generate a random color for each data point
-        //         const backgroundColors = labels.map(() => getRandomColor());
-        //         const borderColors = backgroundColors.map(color => getDarkerColor(color));
-
-        //         new Chart(ctx, {
-        //             type: 'pie',
-        //             data: {
-        //                 labels: labels,
-        //                 datasets: [{
-        //                     data: values,
-        //                     backgroundColor: borderColors,
-        //                     borderColor: backgroundColors,
-        //                     borderWidth: 1
-        //                 }]
-        //             },
-        //             options: {
-        //                 responsive: true,
-        //                 maintainAspectRatio: true, // this fixed the drifting issue
-        //                 animation: false,
-        //                 title: {
-        //                     display: true,
-        //                     text: 'Pie Chart of functions in sample \nbased on EC numbers',
-        //                     fontSize: 20
-        //                 }
-        //             }
-        //         });
-
-        //         // data.forEach(row => {
-        //         //     table += `<tr><td><span>${row.header}</span></td><td><span>${row.nt_seq}</span></td></tr>`;
-        //         //     table += 
-        //         //     `<tr>
-        //         //         <td><span>${row.title}</span></td>
-        //         //         <td><span>${row.expect}</span></td>
-        //         //         <td><span>${row.subject}</span></td>
-        //         //         <td><span>${row.length}</span></td>
-        //         //         <td><span>${row.db_used}</span></td>
-        //         //         <td><span>${row.accession}</span></td>
-        //         //     </tr>`;
-        //         //     table += 
-        //         //     `<tr>
-        //         //         <td><span>${row.ec_number}</span></td>
-        //         //     </tr>`;
-        //         // });
-        //         // table += '</table>';
-        //         // resultsSection.innerHTML = table;
-                
-        //     } else {
-        //         const errorMsg = 'No output data received from main process';
-        //         log(errorMsg);
-        //         console.log(errorMsg);
-        //         // make a check for why no data was received
-        //     }
-            
-        // });

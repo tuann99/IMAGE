@@ -1,11 +1,11 @@
 try:
-    import os
-    import sys
-    import json
-    import pandas as pd
-    from Bio.Blast import NCBIWWW, NCBIXML
     from Bio import SeqIO, Seq
+    from Bio.Blast import NCBIWWW, NCBIXML
+    import json
+    import os
+    import pandas as pd
     import requests
+    import sys
     from xml.etree import ElementTree as ET
 except ImportError as e:
     print(e)
@@ -16,7 +16,6 @@ except ImportError as e:
 
 # Constants
 INPUT = str(sys.argv[1])
-NCBIWWW.email = "tnguy256@jhu.edu"
 TMP_DIR = os.path.join(os.path.dirname(__file__), "tmp")
 DB_DIR = os.path.join(os.path.dirname(__file__), "db")
 TMP_FILE_PATH = os.path.join(TMP_DIR, "tmp.fasta")
@@ -186,6 +185,38 @@ def get_ec_number(uniprot_accession):
         formatted_ec_number = ecNumber.text.replace(".-", "")
         return formatted_ec_number
     
+# def ec_number_count(ec_numbers_df):
+#     """
+#     Description:
+#     Counts the number of times each EC number appears in the blast results.
+    
+#     Args:
+#     Dataframe of ec numbers with column name "ec_number".
+    
+#     Returns:
+#     Dictionaries for each position with unique numbers as keys and counts as values.
+#     with EC number as key and count as value.
+#     """
+    
+#     whole_ec_counts_dict = {}
+#     final_ec_dict = {}
+    
+#     for ec in ec_numbers_df["ec_number"]:
+#         if ec not in whole_ec_counts_dict:
+#             whole_ec_counts_dict[ec] = 1
+#         else:
+#             whole_ec_counts_dict[ec] += 1
+    
+#     for key in whole_ec_counts_dict:
+#         with open(EC_DB_PATH, "r") as in_handle:
+#             for line in in_handle:
+#                 if key == line.split("\t")[0]:
+#                     ec_name = line.split("\t")[1].replace("\n", "")
+#                     if ec_name not in final_ec_dict:
+#                         final_ec_dict[ec_name] = str(whole_ec_counts_dict[key])
+                        
+#     return final_ec_dict
+
 def ec_number_count(ec_numbers_df):
     """
     Description:
@@ -201,7 +232,14 @@ def ec_number_count(ec_numbers_df):
     
     whole_ec_counts_dict = {}
     final_ec_dict = {}
-    
+    ec_db_dict = {}
+
+    # Read the EC_DB_PATH file once and store it in a dictionary
+    with open(EC_DB_PATH, "r") as in_handle:
+        for line in in_handle:
+            key, ec_name = line.split("\t")
+            ec_db_dict[key] = ec_name.replace("\n", "")
+
     for ec in ec_numbers_df["ec_number"]:
         if ec not in whole_ec_counts_dict:
             whole_ec_counts_dict[ec] = 1
@@ -209,12 +247,10 @@ def ec_number_count(ec_numbers_df):
             whole_ec_counts_dict[ec] += 1
     
     for key in whole_ec_counts_dict:
-        with open(EC_DB_PATH, "r") as in_handle:
-            for line in in_handle:
-                if key == line.split("\t")[0]:
-                    ec_name = line.split("\t")[1].replace("\n", "")
-                    if ec_name not in final_ec_dict:
-                        final_ec_dict[ec_name] = str(whole_ec_counts_dict[key])
+        if key in ec_db_dict:
+            ec_name = ec_db_dict[key]
+            if ec_name not in final_ec_dict:
+                final_ec_dict[ec_name] = str(whole_ec_counts_dict[key])
                         
     return final_ec_dict
 
