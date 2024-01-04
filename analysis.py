@@ -89,8 +89,7 @@ def create_tmp_fasta(text_input):
     Rather than working with files and directories from the user,
     this function creates a temporary file that is deleted after
     the program is finished. This is to avoid any issues with
-    file permissions and to avoid having to create a directory
-    for each user. 
+    file permissions.
     
     Args:
     text_input: The input text from the user.
