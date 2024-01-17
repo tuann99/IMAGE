@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
             const reader = new FileReader();
             reader.onload = function(e) {
-                textarea.value = e.target.result;  // Store the file contents in the textarea
+                textarea.value = e.target.result;
             };
             reader.readAsText(file);
         } else {
